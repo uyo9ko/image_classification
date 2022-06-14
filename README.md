@@ -41,7 +41,7 @@ image_classification
     ├── DisMFTJam
     └── ...
 ```
-2. 修改数据路径参数data_dir
+2. 打开main.py修改数据路径参数data_dir
 ```
 data = MyDataModule(data_dir="/root/zhshen/image_calssfication/", batch_size=32)
 ```

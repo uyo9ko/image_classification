@@ -49,7 +49,7 @@ data = MyDataModule(data_dir="/root/zhshen/image_calssfication/", batch_size=32)
 ```
 model = MyModel(lr=0.001,classes=8, model_name='googlenet')
 ```
-4. 运行main.py 等待训练完成, 模型默认保存在'image_calssfication/None/version_None/checkpoints'路径下
+4. 运行main.py 等待训练完成, 模型默认保存在'./None/version_None/checkpoints'路径下
 5. 打开wandb，登陆账号，观察训练验证loss曲线等
 6. 打开evaluate.ipynb，修改本地保存ckpt模型的路径参数，运行代码得到混淆矩阵精确率召回率等数据指标
 ```

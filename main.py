@@ -12,7 +12,8 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from model import MyModel
 from dataset import MyDataModule
-
+import matplotlib.pyplot as plt
+import numpy as np
 seed_everything(7)
 
 # NUM_WORKERS = int(os.cpu_count() / 2)
@@ -33,10 +34,18 @@ supported_model = [  'alexnet', 'AlexNet', 'resnet18',
 wandb_logger = WandbLogger(project='image_classification', log_model=True )
 model = MyModel(lr=0.001,classes=8, model_name='googlenet')
 data = MyDataModule(data_dir="/root/zhshen/image_calssfication/", batch_size=32)
-# most basic trainer, uses good defaults
-#trainer = Trainer(num_tpu_cores=8, precision=16,max_epochs=2)
 trainer = Trainer(gpus=1, max_epochs=30, logger=wandb_logger, log_every_n_steps=5)
-#trainer = Trainer()
-#trainer = Trainer(num_tpu_cores=8, max_epochs=2, precision=16)
 trainer.fit(model,data) 
+
+train_loss =  np.array(model.train_loss)
+train_acc = np.array(model.train_acc)
+val_loss = np.array(model.val_loss)
+val_acc = np.array(model.val_acc)
+
+np.save('train_loss.npy', train_loss)
+np.save('train_acc.npy', train_acc)
+np.save('val_loss.npy', val_loss)
+np.save('val_acc.npy', val_acc)
+
+
 

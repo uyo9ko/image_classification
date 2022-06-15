@@ -73,6 +73,10 @@ class MyModel(pl.LightningModule):
         self.use_pretrained = True
 
         self.models = CustomClassifier(self.model_name, self.num_classes, self.use_pretrained)
+        self.train_loss = []
+        self.val_loss = []
+        self.train_acc = []
+        self.val_acc = []
 
 
     def forward(self, x):
@@ -87,6 +91,8 @@ class MyModel(pl.LightningModule):
         # tensorboard_logs = {'train_loss': loss}
         self.log('train_loss', loss)
         self.log('train_acc', acc)
+        self.train_loss.append(loss.cpu().detach().numpy()) 
+        self.train_acc.append(acc.cpu().detach().numpy())
         return {'loss': loss}
     
     def validation_step(self, batch, batch_idx):
@@ -96,6 +102,8 @@ class MyModel(pl.LightningModule):
         acc = accuracy(preds, target)
         self.log('val_loss', loss)
         self.log('val_acc', acc)
+        self.val_loss.append(loss.cpu().detach().numpy())
+        self.val_acc.append(acc.cpu().detach().numpy())
         return {'val_loss': loss}
 
     def validation_end(self, outputs):

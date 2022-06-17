@@ -41,17 +41,8 @@ image_classification
     ├── DisMFTJam
     └── ...
 ```
-2. 打开main.py修改数据路径参数data_dir
-```
-data = MyDataModule(data_dir="/root/zhshen/image_calssfication/", batch_size=32)
-```
-3. 修改main.py中自己要预测的数据的类别数量classes参数，其次选择对应的模型名字model_name。
-```
-model = MyModel(lr=0.001,classes=8, model_name='googlenet')
-```
-4. 运行main.py 等待训练完成, 模型默认保存在'./None/version_None/checkpoints'路径下
-5. 打开wandb，登陆账号，观察训练验证loss曲线等
-6. 打开evaluate.ipynb，修改本地保存ckpt模型的路径参数，运行代码得到混淆矩阵精确率召回率等数据指标
-```
-model = MyModel.load_from_checkpoint('/root/zhshen/image_calssfication/None/version_None/checkpoints/epoch=29-step=2399-v1.ckpt',lr=0.001,classes=8, model_name='googlenet')
-```
+2. 打开main.py修改数据路径参数data_dir,对应的模型名字model_name等。
+3. 运行main.py 等待训练完成, 模型默认保存在'./None/model_name/checkpoints'路径下
+4. 打开wandb，登陆账号，观察训练验证loss曲线等
+5. 打开evaluate.py，修改本地保存ckpt模型的路径参数，运行代码得到混淆矩阵精确率召回率等数据指标
+

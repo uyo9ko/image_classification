@@ -17,9 +17,10 @@ class MyDataModule(pl.LightningDataModule):
         self.numworkers = numworkers
         self.train_transforms = torchvision.transforms.Compose(
             [
-                transforms.RandomResizedCrop(256,scale=(0.8, 1.0),ratio=(0.75, 1.33)),
-                transforms.RandomRotation(degrees=15),
-                transforms.CenterCrop(224),
+                # transforms.RandomResizedCrop(256,scale=(0.8, 1.0),ratio=(0.75, 1.33)),
+                # transforms.RandomRotation(degrees=15),
+                # transforms.CenterCrop(224),
+                transforms.Resize((224,224)),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
             ]
@@ -27,7 +28,8 @@ class MyDataModule(pl.LightningDataModule):
 
         self.test_transforms = torchvision.transforms.Compose(
             [
-                transforms.CenterCrop(224), 
+                # transforms.CenterCrop(224), 
+                transforms.Resize((224,224)),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
             ]

@@ -14,6 +14,8 @@ from model import MyModel
 from dataset import MyDataModule
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 seed_everything(7)
 
 # NUM_WORKERS = int(os.cpu_count() / 2)
@@ -31,10 +33,15 @@ supported_model = [  'alexnet', 'AlexNet', 'resnet18',
                      'shufflenet_v2_x1_5', 'shufflenet_v2_x2_0']
 
 
-wandb_logger = WandbLogger(project='image_classification', log_model=True )
-model = MyModel(lr=0.001,classes=8, model_name='googlenet')
-data = MyDataModule(data_dir="/root/zhshen/image_calssfication/", batch_size=32)
-trainer = Trainer(gpus=1, max_epochs=30, logger=wandb_logger, log_every_n_steps=5)
+#修改这两个值
+model_name = 'resnet18'
+data_dir = "/root/zhshen/image_calssfication/"
+
+
+wandb_logger = WandbLogger(project='image_classification', version =  model_name, log_model=True )
+model = MyModel(lr=0.001,classes=8, model_name=model_name)
+data = MyDataModule(data_dir=data_dir, batch_size=32)
+trainer = Trainer(gpus=1, max_epochs=5, logger=wandb_logger, log_every_n_steps=5, val_check_interval=0.1)
 trainer.fit(model,data) 
 
 train_loss =  np.array(model.train_loss)

@@ -25,8 +25,12 @@ class CustomClassifier(nn.Module):
            self.model = torchvision.models.__dict__[arch](pretrained = pretrained)
         else:
            self.model = torchvision.models.__dict__[arch]()
+
+        #这两句话，required_graa是控制是否冻结的，如果注释掉就不冻结
         for param in self.model.parameters():
             param.requires_grad = False
+
+            
         last_module, last_name = get_models_last(self.model)
         if isinstance(last_module, nn.Linear):
             n_features = last_module.in_features
@@ -77,6 +81,8 @@ class MyModel(pl.LightningModule):
         self.val_loss = []
         self.train_acc = []
         self.val_acc = []
+        self.tmp_train_loss = []
+        self.tmp_train_acc = []
 
 
     def forward(self, x):
@@ -91,9 +97,13 @@ class MyModel(pl.LightningModule):
         # tensorboard_logs = {'train_loss': loss}
         self.log('train_loss', loss)
         self.log('train_acc', acc)
-        self.train_loss.append(loss.cpu().detach().numpy()) 
-        self.train_acc.append(acc.cpu().detach().numpy())
-        return {'loss': loss}
+        self.tmp_train_loss.append(loss)
+        self.tmp_train_acc.append(acc)
+        # self.train_loss.append(loss.cpu().detach().numpy()) 
+        # self.train_acc.append(acc.cpu().detach().numpy())
+        return {'loss': loss, 'acc': acc}
+
+
     
     def validation_step(self, batch, batch_idx):
         images, target = batch
@@ -102,15 +112,21 @@ class MyModel(pl.LightningModule):
         acc = accuracy(preds, target)
         self.log('val_loss', loss)
         self.log('val_acc', acc)
-        self.val_loss.append(loss.cpu().detach().numpy())
-        self.val_acc.append(acc.cpu().detach().numpy())
-        return {'val_loss': loss}
+        return {'val_loss': loss, 'val_acc': acc}
 
-    def validation_end(self, outputs):
+    def validation_epoch_end(self, outputs):
         avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        #print(avg_loss)
-        self.log('avg_val_loss', avg_loss)
-        return {'avg_val_loss': avg_loss}
+        avg_acc = torch.stack([x['val_acc'] for x in outputs]).mean()
+        self.val_loss.append(avg_loss.cpu().detach().numpy())
+        self.val_acc.append(avg_acc.cpu().detach().numpy())
+        if len(self.tmp_train_loss) > 0:
+            avg_train_loss = torch.stack(self.tmp_train_loss).mean()
+            avg_train_acc = torch.stack(self.tmp_train_acc).mean()
+            self.train_loss.append(avg_train_loss.cpu().detach().numpy())
+            self.train_acc.append(avg_train_acc.cpu().detach().numpy())
+            self.tmp_train_acc = []
+            self.tmp_train_loss = []
+
 
 
     def predict_step(self, batch, batch_idx):

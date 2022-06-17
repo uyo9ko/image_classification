@@ -11,35 +11,52 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-model = MyModel.load_from_checkpoint('./None/version_None/checkpoints/epoch=29-step=2399-v1.ckpt',lr=0.001,classes=8, model_name='googlenet')
-data = MyDataModule(data_dir="/root/zhshen/image_calssfication", batch_size=32)
-label_names = os.listdir('./test/')
-train_loss = np.load('train_loss.npy')
-train_acc = np.load('train_acc.npy')
-val_loss = np.load('val_loss.npy')
-val_acc = np.load('val_acc.npy')
+#修改这三个参数
+model_name = 'resnet18'
+saved_model_path = '/root/zhshen/image_calssfication/None/resnet18/checkpoints/epoch=9-step=799-v1.ckpt'
+data_dir = "/root/zhshen/image_calssfication"
 
-import numpy as np
-def plot_curve(data, name):
-    plt.figure(figsize=(10,8))
-    plt.plot(data, label=name)
+
+
+model = MyModel.load_from_checkpoint(saved_model_path,lr=0.001,classes=8, model_name=model_name)
+data = MyDataModule(data_dir=data_dir, batch_size=32)
+
+
+
+train_loss = np.load('./train_loss.npy')
+train_acc = np.load('./train_acc.npy')
+val_loss = np.load('./val_loss.npy')
+val_acc = np.load('./val_acc.npy')
+print(train_loss.shape)
+
+
+def plot_loss(train_loss, val_loss):
+    plt.figure()
+    X = np.arange(len(train_loss))
+    plt.plot(X, train_loss, 'k-+', label="train")
+    plt.plot(X, val_loss[1:], 'k-.', label="val")
+    plt.xlabel("step")
+    plt.ylabel("loss")
+    plt.title("train loss and val loss")
     plt.legend()
-    plt.title(name+' curve')
-    plt.xlabel('Step')
-    plt.ylabel('Loss')
-    plt.show()
-    plt.savefig(name+'.png')
+    plt.savefig('loss.png')
 
-plot_curve(train_loss, 'train_loss')
-print('train_loss done')
-plot_curve(train_acc, 'train_acc')
-print('train_acc done')
-plot_curve(val_acc, 'val_acc')
-print('val_acc done')
-plot_curve(val_loss, 'val_loss')
-print('val_loss done')
+def plot_acc(train_acc, val_acc):
+    plt.figure()
+    X = np.arange(len(train_acc))
+    plt.plot(X, train_acc, 'k-+', label="train")
+    plt.plot(X, val_acc[1:], 'k-.', label="val")
+    plt.xlabel("step")
+    plt.ylabel("acc")
+    plt.title("train acc and val acc")
+    plt.legend()
+    plt.savefig('acc.png')
 
 
+plot_loss(train_loss, val_loss)
+print('训练集与验证集损失函数已保存为loss.png')
+plot_acc(train_acc, val_acc)
+print('训练集与验证集准确率函数已保存为acc.png')
 
 t_labels = []
 t_preds = []
@@ -114,7 +131,8 @@ cnf_matrix = confusion_matrix(t_labels, t_preds)
 fig = plt.figure()
 fig.set_size_inches(14, 12, forward=True)
 #fig.align_labels()
-
+print(data.test_dataset.class_to_idx)
+label_names = data.test_dataset.classes
 # fig.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=1.0)
 plot_confusion_matrix(cnf_matrix, classes=np.asarray(label_names), normalize=True,
                       title='Normalized confusion matrix')

@@ -48,11 +48,13 @@ train_loss =  np.array(model.train_loss)
 train_acc = np.array(model.train_acc)
 val_loss = np.array(model.val_loss)
 val_acc = np.array(model.val_acc)
+times = np.array(model.times)
 
 np.save('train_loss.npy', train_loss)
 np.save('train_acc.npy', train_acc)
 np.save('val_loss.npy', val_loss)
 np.save('val_acc.npy', val_acc)
+np.save('times.npy', times)
 
 
 

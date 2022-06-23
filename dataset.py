@@ -40,9 +40,10 @@ class MyDataModule(pl.LightningDataModule):
         # Used to prepare the data for the run
         train_dataset = datasets.ImageFolder(root=self.train_data_dir, transform=self.train_transforms)
         self.test_dataset = datasets.ImageFolder(root=self.test_data_dir, transform=self.test_transforms)
-        val_len = int(len(train_dataset) * validation_split)
-        train_len = int(len(train_dataset) - val_len)
-        self.train_dataset, self.val_dataset = random_split(train_dataset, [train_len, val_len])
+#         self.val_dataset = datasets.ImageFolder(root=self.test_data_dir, transform=self.test_transforms)
+#         val_len = int(len(train_dataset) * validation_split)
+#         train_len = int(len(train_dataset) - val_len)
+#         self.train_dataset, self.val_dataset = random_split(train_dataset, [train_len, val_len])
         print(f"Train dataset size: {len(self.train_dataset)}")
         print(f"Validation dataset size: {len(self.val_dataset)}")
         print(f"Test dataset size: {len(self.test_dataset)}")
@@ -58,7 +59,7 @@ class MyDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            self.val_dataset,
+            self.test_dataset,
             self.batch_size,
             shuffle=True,
             num_workers=self.numworkers,

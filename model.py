@@ -10,7 +10,7 @@ from torch.optim.lr_scheduler import OneCycleLR
 from torch.optim.swa_utils import AveragedModel, update_bn
 from torchmetrics.functional import accuracy
 import pytorch_lightning as pl
-
+import time
 
 
 def get_models_last(model):
@@ -83,6 +83,8 @@ class MyModel(pl.LightningModule):
         self.val_acc = []
         self.tmp_train_loss = []
         self.tmp_train_acc = []
+        self.start_time = time.time()
+        self.times = []
 
 
     def forward(self, x):
@@ -119,6 +121,7 @@ class MyModel(pl.LightningModule):
         avg_acc = torch.stack([x['val_acc'] for x in outputs]).mean()
         self.val_loss.append(avg_loss.cpu().detach().numpy())
         self.val_acc.append(avg_acc.cpu().detach().numpy())
+        self.times.append(time.time()-self.start_time)
         if len(self.tmp_train_loss) > 0:
             avg_train_loss = torch.stack(self.tmp_train_loss).mean()
             avg_train_acc = torch.stack(self.tmp_train_acc).mean()

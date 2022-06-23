@@ -27,9 +27,20 @@ train_loss = np.load('./train_loss.npy')
 train_acc = np.load('./train_acc.npy')
 val_loss = np.load('./val_loss.npy')
 val_acc = np.load('./val_acc.npy')
+times = np.load('./times.npy')
 print(train_loss.shape)
 
 
+def plot_time(times):
+    plt.figure()
+    X = np.arange(len(times))
+    plt.plot(X, times, 'k-+', label="times")
+    plt.xlabel("step")
+    plt.ylabel("times")
+    plt.title("times")
+    plt.legend()
+    plt.savefig('times.png')
+    
 def plot_loss(train_loss, val_loss):
     plt.figure()
     X = np.arange(len(train_loss))
